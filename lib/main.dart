@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:responsive_app/ResponsiveWidget.dart';
 import 'dart:convert';
 import 'package:responsive_app/constants.dart';
+import 'package:responsive_app/widgets/text_field_container.dart';
+
+
 
 void main() {
   runApp(MyApp());
@@ -30,8 +32,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String upperval = '';
-  String underVal = '';
 
   final myILSController = TextEditingController();
   final myJPYController = TextEditingController();
@@ -49,19 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     // Start listening to changes.
-    myILSController.addListener(getILStoJPY);
     myJPYController.addListener(getJPYtoILS);
-  }
-
-  _printLatestValue() {
-    // print("Second text field: ${myILSController.text}");
-    // myILSController.text = getILStoJPY(double.parse(myILSController.text)).toString();
-    // myJPYController.text = myILSController.text;
-  }
-
-  _printLatestValueTwo() {
-    // print("Second text field: ${myJPYController.text}");
-    // getILStoJPY(double.parse(myJPYController.text));
+    myILSController.addListener(getILStoJPY);
   }
 
   void getJPYtoILS() async {
@@ -75,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (myILSController != '') {
         myILSController.text =
             (lon * double.parse(myJPYController.text)).toString();
+        return;
       }
     } else {
       print(response.statusCode);
@@ -90,12 +80,17 @@ class _MyHomePageState extends State<MyHomePage> {
       double lon = jsonDecode(data)['rates']['JPY'];
       print(lon);
       if (myILSController != '') {
-        myJPYController.text =
-            (lon * double.parse(myILSController.text)).toString();
+        returnSumJPY((lon * double.parse(myILSController.text)).toString());
       }
+      return;
     } else {
       print(response.statusCode);
     }
+  }
+
+  String returnSumJPY(String sum) {
+    getILStoJPY();
+    return sum;
   }
 
   @override
@@ -106,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('images/backgroundImage.jpg'),
+              image: AssetImage('images/back.jpg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -117,7 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 Text(
                   'JPY To ILS',
                   style: TextStyle(
-                    color: Colors.green,
+                    color: Color(0xFFFFFFF0),
+                    fontFamily: 'Knewave',
                     fontSize: constraints.height / 15,
                   ),
                 ),
@@ -129,34 +125,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Container(
-                          alignment: Alignment.centerRight,
+                        TextFieldContainer(
+                          myILSController: myILSController,
+                          myJPYController: myJPYController,
                           width: constraints.width / 1.4,
                           height: constraints.height / 10,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Color(0xFFDC143C),
-                              width: 3,
-                            ),
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(80),
-                            ),
-                            image: DecorationImage(
-                              image: ExactAssetImage('images/israel.png'),
-                              fit: BoxFit.fill,
-                              colorFilter: ColorFilter.mode(
-                                  Colors.black.withOpacity(0.2),
-                                  BlendMode.dstATop),
-                            ),
-                          ),
-                          child: TextField(
-                            controller: myILSController,
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            style: TextStyle(
-                              fontSize: constraints.height / 20,
-                            ),
+                          image: ExactAssetImage('images/israel.png'),
+                          alignment: Alignment.centerRight,
+                          fontSize: constraints.height / 20,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(80),
                           ),
                         ),
                       ],
@@ -167,34 +145,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
+                        TextFieldContainer(
+                          myILSController: myILSController,
+                          myJPYController: myJPYController,
                           width: constraints.width / 1.4,
                           height: constraints.height / 10,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: Color(0xFFDC143C),
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(80),
-                            ),
-                            image: DecorationImage(
-                              image: ExactAssetImage('images/japan.png'),
-                              fit: BoxFit.fill,
-                              colorFilter: ColorFilter.mode(
-                                  Colors.black.withOpacity(0.2),
-                                  BlendMode.dstATop),
-                            ),
-                          ),
-                          child: TextField(
-                            controller: myJPYController,
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            style: TextStyle(
-                              fontSize: constraints.height / 20,
-                            ),
+                          image: ExactAssetImage('images/japan.png'),
+                          alignment: Alignment.centerLeft,
+                          fontSize: constraints.height / 20,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(80),
                           ),
                         ),
                       ],
