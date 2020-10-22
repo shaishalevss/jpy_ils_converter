@@ -17,4 +17,23 @@ const kTextFieldDecoration = InputDecoration(
   ),
 );
 
+const kMainContainerDecoration = BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage('images/back.jpg'),
+    fit: BoxFit.cover,
+  ),
+);
 
+const kArrowRightUpDecoration = BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage('images/rightup.png'),
+    fit: BoxFit.cover,
+  ),
+);
+
+const kArrowLeftDownDecoration = BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage('images/leftdown.png'),
+    fit: BoxFit.cover,
+  ),
+);

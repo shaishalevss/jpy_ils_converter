@@ -3,17 +3,15 @@ import 'package:responsive_app/widgets/text_field_button.dart';
 
 class TextFieldContainer extends StatelessWidget {
   TextFieldContainer(
-      {TextEditingController this.myILSController,
-        TextEditingController this.myJPYController,
-        double this.width,
-        double this.height,
-        ExactAssetImage this.image,
-        Alignment this.alignment,
-        double this.fontSize,
-        BorderRadius this.borderRadius,});
+      { this.controller,
+        this.width,
+        this.height,
+        this.image,
+        this.alignment,
+        this.fontSize,
+        this.borderRadius,});
 
-  final TextEditingController myILSController;
-  final TextEditingController myJPYController;
+  final TextEditingController controller;
   final double width;
   final double height;
   final ExactAssetImage image;
@@ -36,14 +34,13 @@ class TextFieldContainer extends StatelessWidget {
         borderRadius: borderRadius,
         image: DecorationImage(
           image: image,
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(0.2), BlendMode.dstATop),
         ),
       ),
       child: TextFieldButton(
-          myILSController: myILSController,
-          myJPYController: myJPYController,
+          controller: controller,
           fontSize: fontSize),
     );
   }

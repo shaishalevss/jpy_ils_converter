@@ -8,8 +8,6 @@ import 'dart:convert';
 import 'package:responsive_app/constants.dart';
 import 'package:responsive_app/widgets/text_field_container.dart';
 
-
-
 void main() {
   runApp(MyApp());
 }
@@ -32,9 +30,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   final myILSController = TextEditingController();
   final myJPYController = TextEditingController();
+  double val = 0;
+  bool currentState = true;
 
   @override
   void dispose() {
@@ -49,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     // Start listening to changes.
-    myJPYController.addListener(getJPYtoILS);
+    myJPYController.addListener(getILStoJPY);
     myILSController.addListener(getILStoJPY);
   }
 
@@ -61,11 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       String data = response.body;
       double lon = jsonDecode(data)['rates']['ILS'];
       print(lon);
-      if (myILSController != '') {
-        myILSController.text =
-            (lon * double.parse(myJPYController.text)).toString();
-        return;
-      }
+      print(lon * double.parse(myJPYController.text));
     } else {
       print(response.statusCode);
     }
@@ -79,18 +74,15 @@ class _MyHomePageState extends State<MyHomePage> {
       String data = response.body;
       double lon = jsonDecode(data)['rates']['JPY'];
       print(lon);
-      if (myILSController != '') {
-        returnSumJPY((lon * double.parse(myILSController.text)).toString());
-      }
-      return;
+      val = lon;
+      print(lon * double.parse(myILSController.text));
     } else {
       print(response.statusCode);
     }
   }
 
-  String returnSumJPY(String sum) {
-    getILStoJPY();
-    return sum;
+  void changeVisibility() {
+    currentState = !currentState;
   }
 
   @override
@@ -99,12 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: null,
       builder: (context, constraints) {
         return Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('images/back.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
+          decoration: kMainContainerDecoration,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -125,9 +112,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        FlatButton(
+                          onPressed: () {
+                            setState(() {
+                              changeVisibility();
+                            });
+                          },
+                          child: Visibility(
+                            visible: currentState,
+                            child: Container(
+                              width: constraints.width / 5,
+                              height: constraints.height / 10,
+                              decoration: kArrowLeftDownDecoration,
+                            ),
+                          ),
+                        ),
                         TextFieldContainer(
-                          myILSController: myILSController,
-                          myJPYController: myJPYController,
+                          controller: myILSController,
                           width: constraints.width / 1.4,
                           height: constraints.height / 10,
                           image: ExactAssetImage('images/israel.png'),
@@ -140,14 +141,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                     SizedBox(
-                      height: constraints.height / 50,
+                      height: constraints.height / 41,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         TextFieldContainer(
-                          myILSController: myILSController,
-                          myJPYController: myJPYController,
+                          controller: myJPYController,
                           width: constraints.width / 1.4,
                           height: constraints.height / 10,
                           image: ExactAssetImage('images/japan.png'),
@@ -157,8 +157,35 @@ class _MyHomePageState extends State<MyHomePage> {
                             topRight: Radius.circular(80),
                           ),
                         ),
+                        FlatButton(
+                          onPressed: () { setState(() {
+                            changeVisibility();
+                          });},
+                          child: Visibility(
+                            visible: !currentState,
+                            child: Container(
+                              width: constraints.width / 5 ,
+                              height: constraints.height / 10,
+                              decoration: kArrowRightUpDecoration,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
+                    RaisedButton(
+                        child: Text("Convert"),
+                        elevation: 3,
+                        onPressed: () {
+                          setState(() {
+                            if(myILSController.text == '' || myJPYController == ''){
+                              return;
+                            } else {
+                              getILStoJPY();
+                              myJPYController.text =
+                                  (val * double.parse(myILSController.text))
+                                      .toString();
+                            }      });
+                        }),
                   ],
                 ),
               ],
