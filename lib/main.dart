@@ -33,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final myILSController = TextEditingController();
   final myJPYController = TextEditingController();
   double val = 0;
+  double val2 = 0;
   bool currentState = true;
 
   @override
@@ -50,6 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // Start listening to changes.
     myJPYController.addListener(getILStoJPY);
     myILSController.addListener(getILStoJPY);
+    myJPYController.text = '0';
+    myILSController.text = '0';
   }
 
   void getJPYtoILS() async {
@@ -60,6 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
       String data = response.body;
       double lon = jsonDecode(data)['rates']['ILS'];
       print(lon);
+      print('HEYYYYY');
+      val2 = lon;
       print(lon * double.parse(myJPYController.text));
     } else {
       print(response.statusCode);
@@ -116,6 +121,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           onPressed: () {
                             setState(() {
                               changeVisibility();
+                              myJPYController.text = '0';
+                              myILSController.text = '0';
                             });
                           },
                           child: Visibility(
@@ -158,13 +165,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         FlatButton(
-                          onPressed: () { setState(() {
-                            changeVisibility();
-                          });},
+                          onPressed: () {
+                            setState(() {
+                              changeVisibility();
+                              myJPYController.text = '0';
+                              myILSController.text = '0';
+                            });
+                          },
                           child: Visibility(
                             visible: !currentState,
                             child: Container(
-                              width: constraints.width / 5 ,
+                              width: constraints.width / 5,
                               height: constraints.height / 10,
                               decoration: kArrowRightUpDecoration,
                             ),
@@ -172,19 +183,34 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ],
                     ),
+                    SizedBox(
+                      height: constraints.height/81,
+                    ),
                     RaisedButton(
                         child: Text("Convert"),
-                        elevation: 3,
+                        elevation: 5,
+                        color: Colors.green,
+                        padding: EdgeInsets.all(12.0),
+                        splashColor: Colors.yellow[200],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.black),
+                        ),
                         onPressed: () {
                           setState(() {
-                            if(myILSController.text == '' || myJPYController == ''){
+                            if (myILSController.text == '0' ||
+                                myJPYController.text == '0') {
                               return;
                             } else {
-                              getILStoJPY();
-                              myJPYController.text =
-                                  (val * double.parse(myILSController.text))
-                                      .toString();
-                            }      });
+                              if (currentState) {
+                                getILStoJPY();
+                                myJPYController.text = (val * double.parse(myILSController.text)).toString();
+                              } else if(!currentState) {
+                                getJPYtoILS();
+                                myILSController.text = (val2 * double.parse(myJPYController.text)).toString();
+                              }
+                            }
+                          });
                         }),
                   ],
                 ),
